@@ -3,481 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Buscador de Instalaciones</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f5f9;
-      color: #222;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #0d47a1, #1976d2);
-      color: white;
-      padding: 28px 20px;
-      text-align: center;
-    }
-
-    .header .icon {
-      font-size: 42px;
-      margin-bottom: 8px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 25px;
-    }
-
-    .header p {
-      margin: 8px 0 0;
-      opacity: 0.9;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 25px auto;
-      padding: 0 15px;
-    }
-
-    .search-box {
-      background: white;
-      padding: 18px;
-      border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.10);
-    }
-
-    .search-box label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    input {
-      flex: 1;
-      padding: 14px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 9px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #1976d2;
-    }
-
-    button {
-      border: none;
-      border-radius: 9px;
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .search-btn {
-      background: #1976d2;
-      color: white;
-    }
-
-    .search-btn:hover {
-      background: #0d47a1;
-    }
-
-    .message {
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-
-    .card {
-      background: white;
-      margin-top: 20px;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.10);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #0d47a1;
-      font-size: 21px;
-    }
-
-    .dato {
-      padding: 12px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .dato:last-child {
-      border-bottom: none;
-    }
-
-    .dato strong {
-      display: block;
-      color: #555;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    .coordenadas {
-      background: #e8f5e9;
-      border-radius: 9px;
-      padding: 12px;
-      margin-top: 8px;
-      color: #1b5e20;
-      font-weight: bold;
-    }
-
-    .maps-btn {
-      display: block;
-      width: 100%;
-      margin-top: 12px;
-      background: #2e7d32;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      padding: 14px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .maps-btn:hover {
-      background: #1b5e20;
-    }
-
-    .new-btn {
-      display: block;
-      width: 100%;
-      margin-top: 15px;
-      background: #eeeeee;
-      color: #333;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      .search-row {
-        flex-direction: column;
-      }
-
-      .search-btn {
-        width: 100%;
-      }
-
-      .header h1 {
-        font-size: 22px;
-      }
-    }
-  </style>
+  <title>Prueba Google Sheets</title>
 </head>
 
-<body>
+<body style="font-family:Arial;padding:20px">
 
-  <div class="header">
-    <div class="icon">📍</div>
-    <h1>Buscador de Instalaciones</h1>
-    <p>Consulta información de la instalación</p>
-  </div>
+<h2>Prueba de conexión</h2>
 
-  <div class="container">
+<button onclick="probar()">LEER GOOGLE SHEETS</button>
 
-    <div class="search-box">
-      <label for="instalacion">Ingrese instalación</label>
-
-      <div class="search-row">
-        <input
-          type="text"
-          id="instalacion"
-          placeholder="Ej: 100318128 o G3569505"
-          autocomplete="off"
-        >
-
-        <button class="search-btn" onclick="buscar()">
-          Buscar
-        </button>
-      </div>
-    </div>
-
-    <div id="mensaje" class="message"></div>
-
-    <div id="resultado" class="card hidden"></div>
-
-  </div>
+<pre id="resultado" style="
+  white-space:pre-wrap;
+  background:#eee;
+  padding:15px;
+  margin-top:20px;
+"></pre>
 
 <script>
 
-const SHEET_ID = "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
+const SHEET_ID =
+"17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
-function normalizar(valor) {
-  if (valor === null || valor === undefined) {
-    return "";
-  }
+async function probar() {
 
-  return String(valor)
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, "");
-}
+  const resultado =
+    document.getElementById("resultado");
 
+  resultado.innerText = "Leyendo...";
 
-function escapar(valor) {
-  return String(valor)
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'");
-}
-
-
-async function buscar() {
-
-  const input = document.getElementById("instalacion");
-  const mensaje = document.getElementById("mensaje");
-  const resultado = document.getElementById("resultado");
-
-  const buscada = normalizar(input.value);
-
-  resultado.classList.add("hidden");
-  resultado.innerHTML = "";
-  mensaje.innerHTML = "";
-
-  if (!buscada) {
-    mensaje.innerHTML = "⚠️ Ingresa una instalación.";
-    return;
-  }
-
-  mensaje.innerHTML = "🔎 Buscando...";
+  const url =
+    "https://docs.google.com/spreadsheets/d/" +
+    SHEET_ID +
+    "/gviz/tq?tqx=out:json&sheet=Hoja%201";
 
   try {
 
-    /*
-      Primero intentamos buscar directamente en la columna B
-      (INSTALACION).
-    */
-
-    const consulta =
-      "select A,B,C,D,E,F,G,H,I,J,K " +
-      "where B = '" +
-      escapar(buscada) +
-      "'";
-
-    const url =
-      "https://docs.google.com/spreadsheets/d/" +
-      SHEET_ID +
-      "/gviz/tq" +
-      "?tqx=out:json" +
-      "&sheet=Hoja%201" +
-      "&tq=" +
-      encodeURIComponent(consulta) +
-      "&headers=1" +
-      "&t=" +
-      Date.now();
-
     const respuesta = await fetch(url);
-
-    if (!respuesta.ok) {
-      throw new Error("No se pudo conectar con Google Sheets.");
-    }
 
     const texto = await respuesta.text();
 
-    /*
-      Google devuelve algo como:
-
-      google.visualization.Query.setResponse({...});
-    */
+    console.log(texto);
 
     const inicio = texto.indexOf("{");
     const fin = texto.lastIndexOf("}");
 
     if (inicio === -1 || fin === -1) {
-      throw new Error("Respuesta inválida de Google Sheets.");
-    }
-
-    const datos = JSON.parse(
-      texto.substring(inicio, fin + 1)
-    );
-
-    if (
-      !datos.table ||
-      !datos.table.rows ||
-      datos.table.rows.length === 0
-    ) {
-
-      mensaje.innerHTML =
-        "❌ No se encontró la instalación <b>" +
-        buscada +
-        "</b>.";
+      resultado.innerText =
+        "Google no devolvió datos JSON.\n\n" +
+        texto.substring(0,1000);
 
       return;
     }
 
-    const fila = datos.table.rows[0].c;
+    const datos =
+      JSON.parse(
+        texto.substring(inicio, fin + 1)
+      );
 
-    function valor(columna) {
-
-      if (!fila[columna]) {
-        return "";
-      }
-
-      if (fila[columna].f !== undefined) {
-        return fila[columna].f;
-      }
-
-      if (fila[columna].v !== undefined) {
-        return fila[columna].v;
-      }
-
-      return "";
-    }
-
-    const proceso = valor(0);
-    const instalacion = valor(1);
-    const unidad = valor(2);
-    const direccion = valor(3);
-    const poste = valor(4);
-    const serie = valor(5);
-    const marca = valor(6);
-    const tipo = valor(7);
-    const usuario = valor(8);
-    const nota = valor(9);
-    const coordenadas = valor(10);
-
-    mensaje.innerHTML = "✅ Instalación encontrada";
-
-    let botonMapa = "";
-
-    /*
-      Detectamos coordenadas del tipo:
-
-      -35.402349, -71.6411559
-    */
-
-    const patronCoordenadas =
-      /(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/;
-
-    const match = String(coordenadas).match(
-      patronCoordenadas
-    );
-
-    if (match) {
-
-      const lat = match[1];
-      const lon = match[2];
-
-      const mapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=" +
-        encodeURIComponent(lat + "," + lon);
-
-      botonMapa =
-        '<a class="maps-btn" href="' +
-        mapsUrl +
-        '" target="_blank">' +
-        "📍 Abrir ubicación en Google Maps" +
-        "</a>";
-    }
-
-    resultado.innerHTML =
-
-      "<h2>📍 Instalación " +
-      instalacion +
-      "</h2>" +
-
-      crearDato("Proceso", proceso) +
-
-      crearDato("Instalación", instalacion) +
-
-      crearDato("Unidad de lectura", unidad) +
-
-      crearDato("Dirección", direccion) +
-
-      crearDato("Número de poste", poste) +
-
-      crearDato("Número de serie", serie) +
-
-      crearDato("Marca", marca) +
-
-      crearDato("Tipo de numerador", tipo) +
-
-      crearDato("Usuario", usuario) +
-
-      crearDato("Nota lectura", nota) +
-
-      '<div class="dato">' +
-        "<strong>Coordenadas</strong>" +
-        '<div class="coordenadas">' +
-        (coordenadas || "Sin coordenadas") +
-        "</div>" +
-        botonMapa +
-      "</div>" +
-
-      '<button class="new-btn" onclick="nuevaBusqueda()">' +
-      "🔎 Nueva búsqueda" +
-      "</button>";
-
-    resultado.classList.remove("hidden");
+    resultado.innerText =
+      JSON.stringify(datos, null, 2);
 
   } catch (error) {
 
-    console.error(error);
-
-    mensaje.innerHTML =
-      "❌ Ocurrió un error al consultar la información.";
+    resultado.innerText =
+      "ERROR:\n\n" +
+      error;
 
   }
+
 }
-
-
-function crearDato(nombre, valor) {
-
-  return (
-    '<div class="dato">' +
-      "<strong>" +
-      nombre +
-      "</strong>" +
-      "<div>" +
-      (valor || "—") +
-      "</div>" +
-    "</div>"
-  );
-}
-
-
-function nuevaBusqueda() {
-
-  document.getElementById("instalacion").value = "";
-
-  document.getElementById("mensaje").innerHTML = "";
-
-  document.getElementById("resultado").innerHTML = "";
-
-  document.getElementById("resultado")
-    .classList.add("hidden");
-
-  document.getElementById("instalacion").focus();
-}
-
-
-document.getElementById("instalacion")
-  .addEventListener("keydown", function(event) {
-
-    if (event.key === "Enter") {
-      buscar();
-    }
-
-  });
 
 </script>
 
