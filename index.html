@@ -5,10 +5,7 @@
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Buscador de Instalaciones</title>
 
@@ -297,7 +294,7 @@
     <input
       type="text"
       id="instalacion"
-      placeholder="Ej: 100318128"
+      placeholder="Ej: 100318128 o G3569505"
       autocomplete="off"
     >
 
@@ -329,23 +326,20 @@ const SHEET_ID =
 "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
 
-const URL_DATOS =
+const URL_CSV =
 "https://docs.google.com/spreadsheets/d/" +
 SHEET_ID +
-"/gviz/tq?tqx=out:json";
+"/gviz/tq?tqx=out:csv";
 
 
-/*
-  NORMALIZAR INSTALACION
+/* NORMALIZAR */
 
-  Convierte cualquier valor a texto,
-  elimina espacios y diferencias
-  entre mayúsculas/minúsculas.
-*/
+function normalizar(valor) {
 
-function normalizarInstalacion(valor) {
-
-  if (valor === null || valor === undefined) {
+  if (
+    valor === null ||
+    valor === undefined
+  ) {
     return "";
   }
 
@@ -357,11 +351,128 @@ function normalizarInstalacion(valor) {
 }
 
 
+/* PARSER CSV */
+
+function parseCSV(texto) {
+
+  const filas = [];
+
+  let fila = [];
+
+  let campo = "";
+
+  let dentroComillas = false;
+
+
+  for (
+    let i = 0;
+    i < texto.length;
+    i++
+  ) {
+
+    const caracter = texto[i];
+
+    const siguiente = texto[i + 1];
+
+
+    if (
+      caracter === '"' &&
+      dentroComillas &&
+      siguiente === '"'
+    ) {
+
+      campo += '"';
+
+      i++;
+
+      continue;
+
+    }
+
+
+    if (
+      caracter === '"'
+    ) {
+
+      dentroComillas =
+        !dentroComillas;
+
+      continue;
+
+    }
+
+
+    if (
+      caracter === "," &&
+      !dentroComillas
+    ) {
+
+      fila.push(campo);
+
+      campo = "";
+
+      continue;
+
+    }
+
+
+    if (
+      (caracter === "\n" ||
+       caracter === "\r") &&
+      !dentroComillas
+    ) {
+
+      if (
+        caracter === "\r" &&
+        siguiente === "\n"
+      ) {
+        i++;
+      }
+
+      fila.push(campo);
+
+      campo = "";
+
+
+      if (fila.length > 1) {
+        filas.push(fila);
+      }
+
+      fila = [];
+
+      continue;
+
+    }
+
+
+    campo += caracter;
+
+  }
+
+
+  if (campo !== "" || fila.length > 0) {
+
+    fila.push(campo);
+
+    if (fila.length > 1) {
+      filas.push(fila);
+    }
+
+  }
+
+
+  return filas;
+
+}
+
+
+/* BUSCAR */
+
 async function buscarInstalacion() {
 
 
   const instalacion =
-    normalizarInstalacion(
+    normalizar(
       document
         .getElementById("instalacion")
         .value
@@ -372,7 +483,9 @@ async function buscarInstalacion() {
     document.getElementById("resultado");
 
 
-  if (instalacion === "") {
+  if (
+    instalacion === ""
+  ) {
 
     resultado.innerHTML = `
 
@@ -381,7 +494,7 @@ async function buscarInstalacion() {
         ⚠️
 
         <strong>
-          Ingresa un número de instalación
+          Ingresa una instalación
         </strong>
 
       </div>
@@ -408,71 +521,73 @@ async function buscarInstalacion() {
 
 
     const respuesta =
-      await fetch(URL_DATOS);
+      await fetch(URL_CSV);
+
+
+    if (!respuesta.ok) {
+
+      throw new Error(
+        "No se pudo acceder a Google Sheets"
+      );
+
+    }
 
 
     const texto =
       await respuesta.text();
 
 
-    const inicio =
-      texto.indexOf("(");
-
-
-    const fin =
-      texto.lastIndexOf(")");
+    const filas =
+      parseCSV(texto);
 
 
     if (
-      inicio === -1 ||
-      fin === -1
+      filas.length < 2
     ) {
 
       throw new Error(
-        "Respuesta inválida de Google Sheets"
+        "No hay datos en la planilla"
       );
 
     }
 
 
-    const json =
-      JSON.parse(
-        texto.substring(
-          inicio + 1,
-          fin
-        )
-      );
+    /*
+      PRIMERA FILA = ENCABEZADOS
+      SEGUNDA FILA EN ADELANTE = DATOS
+    */
 
-
-    const columnas =
-      json.table.cols;
-
-
-    const filas =
-      json.table.rows;
+    const encabezados =
+      filas[0];
 
 
     let encontrado = null;
 
 
-    /*
-      INSTALACION ES LA COLUMNA B
-      índice 1
-    */
-
     for (
-      const fila of filas
+      let i = 1;
+      i < filas.length;
+      i++
     ) {
 
 
-      const valorHoja =
-        normalizarInstalacion(
-          fila.c[1]?.v
+      const fila =
+        filas[i];
+
+
+      /*
+        INSTALACION = COLUMNA B
+        ÍNDICE 1
+      */
+
+      const valor =
+        normalizar(
+          fila[1]
         );
 
 
       if (
-        valorHoja ===
+        valor ===
         instalacion
       ) {
 
@@ -517,32 +632,34 @@ async function buscarInstalacion() {
     }
 
 
+    /* MOSTRAR DATOS */
+
     let datosHTML = "";
 
 
-    columnas.forEach(
-      (columna, indice) => {
+    encabezados.forEach(
+      (encabezado, indice) => {
 
 
         const nombre =
-          columna.label?.trim() ||
-          `Dato ${indice + 1}`;
+          encabezado.trim();
 
 
         const valor =
-          encontrado.c[indice]?.v
-          ?? "";
+          encontrado[indice]
+          || "";
 
 
-        if (valor === "") {
+        if (
+          valor === ""
+        ) {
           return;
         }
 
 
         if (
-          nombre
-            .toUpperCase()
-            === "COORDENADAS"
+          normalizar(nombre)
+          === "COORDENADAS"
         ) {
 
           return;
@@ -587,31 +704,38 @@ async function buscarInstalacion() {
     `;
 
 
-    /*
-      COORDENADAS
+    /* COORDENADAS */
 
-      La columna COORDENADAS es la
-      columna 11 de la planilla.
-      Índice 10.
-    */
+    const indiceCoordenadas =
+      encabezados.findIndex(
+        encabezado =>
+          normalizar(encabezado)
+          === "COORDENADAS"
+      );
+
 
     let coordenadas = "";
 
 
     if (
-      encontrado.c[10] &&
-      encontrado.c[10].v !== undefined
+      indiceCoordenadas >= 0
     ) {
 
       coordenadas =
-        String(
-          encontrado.c[10].v
+        (
+          encontrado[
+            indiceCoordenadas
+          ] || ""
         ).trim();
 
     }
 
 
-    if (coordenadas !== "") {
+    /* MAPA */
+
+    if (
+      coordenadas !== ""
+    ) {
 
 
       const partes =
@@ -720,18 +844,17 @@ async function buscarInstalacion() {
 }
 
 
-function nuevaBusqueda() {
+/* NUEVA BÚSQUEDA */
 
+function nuevaBusqueda() {
 
   document
     .getElementById("instalacion")
     .value = "";
 
-
   document
     .getElementById("resultado")
     .innerHTML = "";
-
 
   document
     .getElementById("instalacion")
@@ -739,6 +862,8 @@ function nuevaBusqueda() {
 
 }
 
+
+/* ENTER */
 
 document
   .getElementById("instalacion")
