@@ -193,7 +193,6 @@ body {
 }
 
 @media (max-width: 500px) {
-
     .search-box {
         flex-direction: column;
     }
@@ -246,19 +245,12 @@ body {
 
 const SHEET_ID = "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
-/*
-    IMPORTANTE:
-    Usamos la exportación directa CSV de Google Sheets.
-    Esto evita el problema de Google al interpretar
-    la columna INSTALACION como numérica.
-*/
 const URL_CSV =
     "https://docs.google.com/spreadsheets/d/" +
     SHEET_ID +
     "/export?format=csv";
 
 
-// Normaliza la instalación ingresada
 function normalizar(valor) {
 
     if (valor === null || valor === undefined) {
@@ -272,7 +264,6 @@ function normalizar(valor) {
 }
 
 
-// Parser CSV
 function parseCSV(texto) {
 
     const filas = [];
@@ -329,7 +320,6 @@ function parseCSV(texto) {
 }
 
 
-// Buscar instalación
 async function buscar() {
 
     const input = document.getElementById("instalacion");
@@ -348,11 +338,12 @@ async function buscar() {
     }
 
     resultado.innerHTML =
-        '<div class="card mensaje loading">🔎 Buscando instalación...</div>';
+        '<div class="card mensaje loading">' +
+        '🔎 Buscando instalación...' +
+        '</div>';
 
     try {
 
-        // Evita utilizar una versión antigua de la hoja guardada en caché
         const respuesta = await fetch(
             URL_CSV + "&t=" + Date.now()
         );
@@ -365,24 +356,33 @@ async function buscar() {
 
         const filas = parseCSV(texto);
 
-        if (!filas || filas.length < 2) {
-            throw new Error("La planilla no contiene datos.");
+        if (filas.length < 2) {
+            throw new Error("No se encontraron datos.");
         }
-
-        // La primera fila corresponde a los encabezados
-        const encabezados = filas[0];
 
         let encontrada = null;
 
-        // Recorremos todas las filas
         for (let i = 1; i < filas.length; i++) {
 
             const fila = filas[i];
 
-            // INSTALACION está en la columna B
-            const instalacion = normalizar(fila[1]);
+            /*
+                B = INSTALACION
+                L = INSTALACION_BUSQUEDA
 
-            if (instalacion === buscada) {
+                Como L es la columna auxiliar,
+                buscamos principalmente ahí.
+            */
+
+            const instalacionOriginal = normalizar(fila[1]);
+
+            const instalacionBusqueda = normalizar(fila[11]);
+
+            if (
+                instalacionBusqueda === buscada ||
+                instalacionOriginal === buscada
+            ) {
+
                 encontrada = fila;
                 break;
             }
@@ -409,16 +409,12 @@ async function buscar() {
 
         resultado.innerHTML =
             '<div class="card mensaje error">' +
-            '❌ Ocurrió un problema al consultar la planilla.<br><br>' +
-            '<span style="font-weight:normal;color:#64748b;">' +
-            error.message +
-            '</span>' +
+            '❌ Ocurrió un problema al consultar la planilla.' +
             '</div>';
     }
 }
 
 
-// Mostrar resultado
 function mostrarResultado(fila) {
 
     const resultado = document.getElementById("resultado");
@@ -500,8 +496,6 @@ function mostrarResultado(fila) {
                 </div>
     `;
 
-
-    // Crear botón Google Maps si existen coordenadas
     const partes = coordenadas
         .split(",")
         .map(x => x.trim());
@@ -545,7 +539,6 @@ function mostrarResultado(fila) {
 }
 
 
-// Evita que datos de la planilla puedan romper el HTML
 function escapeHTML(valor) {
 
     return String(valor)
@@ -557,18 +550,14 @@ function escapeHTML(valor) {
 }
 
 
-// Nueva búsqueda
 function nuevaBusqueda() {
 
     document.getElementById("instalacion").value = "";
-
     document.getElementById("resultado").innerHTML = "";
-
     document.getElementById("instalacion").focus();
 }
 
 
-// Permitir buscar presionando ENTER
 document
     .getElementById("instalacion")
     .addEventListener("keydown", function(event) {
