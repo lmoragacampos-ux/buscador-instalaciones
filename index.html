@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Buscador de Instalaciones</title>
 
@@ -10,64 +16,128 @@
 
     * {
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: #f1f5f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #eef3f8;
       padding: 20px;
     }
 
     .contenedor {
       width: 100%;
-      max-width: 500px;
-      background: white;
-      border-radius: 20px;
-      padding: 30px 25px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      max-width: 600px;
+      margin: 0 auto;
     }
 
-    h1 {
+    /* ENCABEZADO */
+
+    .encabezado {
+      background: linear-gradient(
+        135deg,
+        #0f4c81,
+        #2563eb
+      );
+
+      color: white;
+
+      border-radius: 20px;
+
+      padding: 25px 20px;
+
       text-align: center;
-      margin-top: 0;
-      color: #1e293b;
+
+      box-shadow:
+        0 8px 25px rgba(0,0,0,0.15);
+
+      margin-bottom: 18px;
+    }
+
+    .icono {
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    .encabezado h1 {
+      margin: 0;
       font-size: 27px;
     }
 
-    .subtitulo {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 25px;
+    .encabezado p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+      font-size: 15px;
+    }
+
+    /* BUSCADOR */
+
+    .buscador {
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 20px;
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
+
+      margin-bottom: 18px;
+    }
+
+    .buscador label {
+      display: block;
+
+      font-weight: bold;
+
+      color: #334155;
+
+      margin-bottom: 8px;
     }
 
     input {
       width: 100%;
-      padding: 15px;
-      font-size: 18px;
+
+      padding: 16px;
+
+      font-size: 20px;
+
       border: 2px solid #cbd5e1;
-      border-radius: 10px;
+
+      border-radius: 12px;
+
       outline: none;
+
       margin-bottom: 12px;
+
+      text-align: center;
     }
 
     input:focus {
       border-color: #2563eb;
+
+      box-shadow:
+        0 0 0 3px rgba(37,99,235,0.12);
     }
 
     .boton-buscar {
       width: 100%;
-      padding: 15px;
+
+      padding: 16px;
+
       background: #2563eb;
+
       color: white;
+
       border: none;
-      border-radius: 10px;
+
+      border-radius: 12px;
+
       font-size: 18px;
+
       font-weight: bold;
+
       cursor: pointer;
     }
 
@@ -75,87 +145,286 @@
       background: #1d4ed8;
     }
 
+    /* CARGANDO */
+
+    .cargando {
+      text-align: center;
+
+      padding: 20px;
+
+      color: #475569;
+
+      font-weight: bold;
+    }
+
+    /* RESULTADO */
+
     #resultado {
-      margin-top: 25px;
+      margin-top: 18px;
     }
 
     .encontrado {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 12px;
+      background: white;
+
+      border-radius: 18px;
+
       padding: 20px;
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
     }
 
     .titulo-encontrado {
-      text-align: center;
+      background: #dcfce7;
+
       color: #166534;
-      font-size: 21px;
+
+      padding: 14px;
+
+      border-radius: 12px;
+
+      text-align: center;
+
+      font-size: 20px;
+
       font-weight: bold;
-      margin-bottom: 20px;
+
+      margin-bottom: 18px;
     }
 
+    /* DATOS */
+
     .dato {
-      background: white;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      background: #f8fafc;
+
       border: 1px solid #e2e8f0;
+
+      border-radius: 12px;
+
+      padding: 13px;
+
+      margin-bottom: 10px;
     }
 
     .dato strong {
-      color: #334155;
+      display: block;
+
+      color: #475569;
+
+      font-size: 13px;
+
+      text-transform: uppercase;
+
+      margin-bottom: 4px;
     }
 
-    .no-encontrado {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 15px;
-      border-radius: 10px;
+    .dato span {
+      color: #0f172a;
+
+      font-size: 16px;
+
+      word-break: break-word;
+    }
+
+    /* COORDENADAS */
+
+    .coordenadas {
+      background: #eff6ff;
+
+      border: 2px solid #93c5fd;
+
+      border-radius: 14px;
+
+      padding: 16px;
+
+      margin-top: 15px;
+
       text-align: center;
     }
+
+    .coordenadas-titulo {
+      color: #1e40af;
+
+      font-weight: bold;
+
+      font-size: 14px;
+
+      margin-bottom: 6px;
+    }
+
+    .coordenadas-valor {
+      color: #0f172a;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      word-break: break-word;
+    }
+
+    /* BOTON MAPA */
 
     .boton-mapa {
       display: block;
+
       text-decoration: none;
+
       background: #16a34a;
+
       color: white;
-      padding: 15px;
-      border-radius: 10px;
+
+      padding: 17px;
+
+      border-radius: 12px;
+
       font-size: 18px;
+
       font-weight: bold;
-      margin-top: 15px;
+
+      margin-top: 12px;
+
       text-align: center;
+
+      box-shadow:
+        0 4px 10px rgba(22,163,74,0.25);
     }
 
     .boton-mapa:hover {
       background: #15803d;
     }
 
-    .pie {
-      margin-top: 25px;
+    /* NUEVA BUSQUEDA */
+
+    .boton-nueva {
+      width: 100%;
+
+      padding: 15px;
+
+      background: #64748b;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 12px;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      margin-top: 12px;
+
+      cursor: pointer;
+    }
+
+    .boton-nueva:hover {
+      background: #475569;
+    }
+
+    /* NO ENCONTRADO */
+
+    .no-encontrado {
+      background: #fee2e2;
+
+      color: #991b1b;
+
+      padding: 18px;
+
+      border-radius: 12px;
+
       text-align: center;
-      font-size: 13px;
+
+      font-size: 16px;
+
+      border: 1px solid #fecaca;
+    }
+
+    /* PIE */
+
+    .pie {
+      text-align: center;
+
       color: #94a3b8;
+
+      font-size: 12px;
+
+      margin-top: 20px;
+
+      padding-bottom: 10px;
+    }
+
+    /* CELULAR */
+
+    @media (max-width: 480px) {
+
+      body {
+        padding: 12px;
+      }
+
+      .encabezado {
+        padding: 22px 15px;
+      }
+
+      .encabezado h1 {
+        font-size: 23px;
+      }
+
+      .buscador {
+        padding: 16px;
+      }
+
+      .encontrado {
+        padding: 15px;
+      }
+
+      input {
+        font-size: 18px;
+      }
+
     }
 
   </style>
 
 </head>
 
+
 <body>
 
-  <div class="contenedor">
 
-    <h1>🔎 Buscador de Instalaciones</h1>
+<div class="contenedor">
 
-    <div class="subtitulo">
-      Ingresa el número de instalación
+
+  <!-- ENCABEZADO -->
+
+  <div class="encabezado">
+
+    <div class="icono">
+      📍
     </div>
+
+    <h1>
+      Buscador de Instalaciones
+    </h1>
+
+    <p>
+      Consulta información y ubicación en terreno
+    </p>
+
+  </div>
+
+
+  <!-- BUSCADOR -->
+
+  <div class="buscador">
+
+    <label for="instalacion">
+      Número de instalación
+    </label>
 
     <input
       type="text"
       id="instalacion"
-      placeholder="Ej: 12345678"
+      placeholder="Ej: 100318128"
       autocomplete="off"
     >
 
@@ -163,128 +432,194 @@
       class="boton-buscar"
       onclick="buscarInstalacion()"
     >
-      🔎 BUSCAR
+      🔎 BUSCAR INSTALACIÓN
     </button>
-
-    <div id="resultado"></div>
-
-    <div class="pie">
-      Sistema de búsqueda de instalaciones
-    </div>
 
   </div>
 
 
+  <!-- RESULTADO -->
+
+  <div id="resultado"></div>
+
+
+  <div class="pie">
+    Sistema de consulta de instalaciones
+  </div>
+
+
+</div>
+
+
 <script>
 
-  const SHEET_ID =
-    "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
-  const URL_DATOS =
-    "https://docs.google.com/spreadsheets/d/" +
-    SHEET_ID +
-    "/gviz/tq?tqx=out:json";
+const SHEET_ID =
+"17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
 
-  async function buscarInstalacion() {
+const URL_DATOS =
+"https://docs.google.com/spreadsheets/d/" +
+SHEET_ID +
+"/gviz/tq?tqx=out:json";
 
-    const instalacion = document
+
+async function buscarInstalacion() {
+
+
+  const instalacion =
+    document
       .getElementById("instalacion")
       .value
       .trim()
       .toUpperCase();
 
-    const resultado =
-      document.getElementById("resultado");
+
+  const resultado =
+    document.getElementById("resultado");
 
 
-    if (instalacion === "") {
-
-      resultado.innerHTML = `
-        <div class="no-encontrado">
-          ⚠️ Ingresa una instalación
-        </div>
-      `;
-
-      return;
-    }
-
+  if (instalacion === "") {
 
     resultado.innerHTML = `
-      <div style="text-align:center;">
-        🔎 Buscando...
+
+      <div class="no-encontrado">
+
+        ⚠️
+
+        <strong>
+          Ingresa un número de instalación
+        </strong>
+
       </div>
+
     `;
 
+    return;
 
-    try {
-
-      const respuesta = await fetch(URL_DATOS);
-
-      const texto = await respuesta.text();
+  }
 
 
-      const inicio = texto.indexOf("(");
-      const fin = texto.lastIndexOf(")");
+  resultado.innerHTML = `
+
+    <div class="cargando">
+
+      🔎 Consultando información...
+
+    </div>
+
+  `;
 
 
-      const json = JSON.parse(
-        texto.substring(inicio + 1, fin)
+  try {
+
+
+    const respuesta =
+      await fetch(URL_DATOS);
+
+
+    const texto =
+      await respuesta.text();
+
+
+    const inicio =
+      texto.indexOf("(");
+
+
+    const fin =
+      texto.lastIndexOf(")");
+
+
+    const json =
+      JSON.parse(
+        texto.substring(
+          inicio + 1,
+          fin
+        )
       );
 
 
-      const columnas = json.table.cols;
-      const filas = json.table.rows;
+    const columnas =
+      json.table.cols;
 
 
-      let encontrado = null;
+    const filas =
+      json.table.rows;
 
 
-      for (const fila of filas) {
-
-        const valorInstalacion =
-          fila.c[1]?.v
-            ?.toString()
-            .trim()
-            .toUpperCase();
+    let encontrado = null;
 
 
-        if (valorInstalacion === instalacion) {
+    /* BUSCAR INSTALACION */
 
-          encontrado = fila;
+    for (
+      const fila of filas
+    ) {
 
-          break;
-        }
+
+      const valorInstalacion =
+        fila.c[1]?.v
+          ?.toString()
+          .trim()
+          .toUpperCase();
+
+
+      if (
+        valorInstalacion ===
+        instalacion
+      ) {
+
+        encontrado = fila;
+
+        break;
 
       }
 
-
-      if (!encontrado) {
-
-        resultado.innerHTML = `
-
-          <div class="no-encontrado">
-
-            ❌ <strong>INSTALACIÓN NO ENCONTRADA</strong>
-
-            <br><br>
-
-            No existe información para:
-
-            <strong>${instalacion}</strong>
-
-          </div>
-
-        `;
-
-        return;
-      }
+    }
 
 
-      let datosHTML = "";
+    /* NO ENCONTRADO */
+
+    if (!encontrado) {
 
 
-      columnas.forEach((columna, indice) => {
+      resultado.innerHTML = `
+
+        <div class="no-encontrado">
+
+          ❌
+
+          <strong>
+            INSTALACIÓN NO ENCONTRADA
+          </strong>
+
+          <br><br>
+
+          No existe información para:
+
+          <br>
+
+          <strong>
+            ${instalacion}
+          </strong>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* DATOS */
+
+    let datosHTML = "";
+
+
+    columnas.forEach(
+      (columna, indice) => {
+
 
         const nombre =
           columna.label?.trim() ||
@@ -292,11 +627,29 @@
 
 
         const valor =
-          encontrado.c[indice]?.v ?? "";
+          encontrado.c[indice]?.v
+          ?? "";
 
 
         if (valor === "") {
+
           return;
+
+        }
+
+
+        /* NO MOSTRAR COORDENADAS
+           AQUÍ, SE MOSTRARÁN
+           DESTACADAS MÁS ABAJO */
+
+        if (
+          nombre
+            .toUpperCase()
+            === "COORDENADAS"
+        ) {
+
+          return;
+
         }
 
 
@@ -304,38 +657,49 @@
 
           <div class="dato">
 
-            <strong>${nombre}:</strong><br>
+            <strong>
+              ${nombre}
+            </strong>
 
-            ${valor}
+            <span>
+              ${valor}
+            </span>
 
           </div>
 
         `;
 
-      });
+      }
+    );
 
 
-      resultado.innerHTML = `
+    /* MOSTRAR RESULTADO */
 
-        <div class="encontrado">
+    resultado.innerHTML = `
 
-          <div class="titulo-encontrado">
-            ✅ INSTALACIÓN ENCONTRADA
-          </div>
+      <div class="encontrado">
 
-          ${datosHTML}
+        <div class="titulo-encontrado">
+
+          ✅ INSTALACIÓN ENCONTRADA
 
         </div>
 
-      `;
+        ${datosHTML}
+
+      </div>
+
+    `;
 
 
-      // Buscar coordenadas
+    /* COORDENADAS */
 
-      let coordenadas = "";
+    let coordenadas = "";
 
 
-      columnas.forEach((columna, indice) => {
+    columnas.forEach(
+      (columna, indice) => {
+
 
         const nombre =
           columna.label
@@ -343,98 +707,179 @@
             .toUpperCase();
 
 
-        if (nombre === "COORDENADAS") {
+        if (
+          nombre ===
+          "COORDENADAS"
+        ) {
+
 
           coordenadas =
             encontrado.c[indice]?.v
-            ?.toString()
-            .trim() || "";
-
-        }
-
-      });
-
-
-      if (coordenadas !== "") {
-
-        let partes =
-          coordenadas.split(",");
-
-
-        if (partes.length >= 2) {
-
-          const latitud =
-            partes[0].trim();
-
-          const longitud =
-            partes[1].trim();
-
-
-          const mapa =
-            "https://www.google.com/maps?q=" +
-            encodeURIComponent(
-              latitud + "," + longitud
-            );
-
-
-          resultado.innerHTML += `
-
-            <a
-              class="boton-mapa"
-              href="${mapa}"
-              target="_blank"
-            >
-              🧭 VER UBICACIÓN EN GOOGLE MAPS
-            </a>
-
-          `;
-
-        }
-
-      }
-
-    }
-
-    catch (error) {
-
-      resultado.innerHTML = `
-
-        <div class="no-encontrado">
-
-          ⚠️ No se pudo consultar la base de datos.
-
-          <br><br>
-
-          Revisa que la planilla esté compartida
-          como "Cualquier persona con el enlace".
-
-        </div>
-
-      `;
-
-      console.error(error);
-
-    }
-
-  }
-
-
-  document
-    .getElementById("instalacion")
-    .addEventListener(
-      "keypress",
-      function(event) {
-
-        if (event.key === "Enter") {
-
-          buscarInstalacion();
+              ?.toString()
+              .trim()
+            || "";
 
         }
 
       }
     );
 
+
+    /* MOSTRAR MAPA */
+
+    if (coordenadas !== "") {
+
+
+      const partes =
+        coordenadas.split(",");
+
+
+      if (
+        partes.length >= 2
+      ) {
+
+
+        const latitud =
+          partes[0].trim();
+
+
+        const longitud =
+          partes[1].trim();
+
+
+        const mapa =
+          "https://www.google.com/maps?q=" +
+          encodeURIComponent(
+            latitud +
+            "," +
+            longitud
+          );
+
+
+        resultado.innerHTML += `
+
+          <div class="coordenadas">
+
+            <div class="coordenadas-titulo">
+
+              📍 COORDENADAS
+
+            </div>
+
+            <div class="coordenadas-valor">
+
+              ${coordenadas}
+
+            </div>
+
+          </div>
+
+
+          <a
+            class="boton-mapa"
+            href="${mapa}"
+            target="_blank"
+          >
+
+            🧭 ABRIR UBICACIÓN EN GOOGLE MAPS
+
+          </a>
+
+
+          <button
+            class="boton-nueva"
+            onclick="nuevaBusqueda()"
+          >
+
+            🔄 NUEVA BÚSQUEDA
+
+          </button>
+
+        `;
+
+      }
+
+    }
+
+
+  }
+
+
+  catch (error) {
+
+
+    console.error(error);
+
+
+    resultado.innerHTML = `
+
+      <div class="no-encontrado">
+
+        ⚠️
+
+        <strong>
+          No se pudo consultar la base de datos
+        </strong>
+
+        <br><br>
+
+        Revisa que la planilla esté compartida
+        como "Cualquier persona con el enlace".
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* NUEVA BUSQUEDA */
+
+function nuevaBusqueda() {
+
+
+  document
+    .getElementById("instalacion")
+    .value = "";
+
+
+  document
+    .getElementById("resultado")
+    .innerHTML = "";
+
+
+  document
+    .getElementById("instalacion")
+    .focus();
+
+}
+
+
+/* ENTER PARA BUSCAR */
+
+document
+  .getElementById("instalacion")
+  .addEventListener(
+    "keypress",
+    function(event) {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        buscarInstalacion();
+
+      }
+
+    }
+  );
+
+
 </script>
 
+
 </body>
+
 </html>
