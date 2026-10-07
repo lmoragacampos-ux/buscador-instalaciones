@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Buscador de Instalaciones</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .contenedor {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px 25px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      color: #1e293b;
+      font-size: 27px;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+    }
+
+    .boton-buscar {
+      width: 100%;
+      padding: 15px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .boton-buscar:hover {
+      background: #1d4ed8;
+    }
+
+    #resultado {
+      margin-top: 25px;
+    }
+
+    .encontrado {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .titulo-encontrado {
+      text-align: center;
+      color: #166534;
+      font-size: 21px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .dato {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .dato strong {
+      color: #334155;
+    }
+
+    .no-encontrado {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .boton-mapa {
+      display: block;
+      text-decoration: none;
+      background: #16a34a;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .boton-mapa:hover {
+      background: #15803d;
+    }
+
+    .pie {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="contenedor">
+
+    <h1>🔎 Buscador de Instalaciones</h1>
+
+    <div class="subtitulo">
+      Ingresa el número de instalación
+    </div>
+
+    <input
+      type="text"
+      id="instalacion"
+      placeholder="Ej: 12345678"
+      autocomplete="off"
+    >
+
+    <button
+      class="boton-buscar"
+      onclick="buscarInstalacion()"
+    >
+      🔎 BUSCAR
+    </button>
+
+    <div id="resultado"></div>
+
+    <div class="pie">
+      Sistema de búsqueda de instalaciones
+    </div>
+
+  </div>
+
+
+<script>
+
+  const SHEET_ID =
+    "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
+
+  const URL_DATOS =
+    "https://docs.google.com/spreadsheets/d/" +
+    SHEET_ID +
+    "/gviz/tq?tqx=out:json";
+
+
+  async function buscarInstalacion() {
+
+    const instalacion = document
+      .getElementById("instalacion")
+      .value
+      .trim()
+      .toUpperCase();
+
+    const resultado =
+      document.getElementById("resultado");
+
+
+    if (instalacion === "") {
+
+      resultado.innerHTML = `
+        <div class="no-encontrado">
+          ⚠️ Ingresa una instalación
+        </div>
+      `;
+
+      return;
+    }
+
+
+    resultado.innerHTML = `
+      <div style="text-align:center;">
+        🔎 Buscando...
+      </div>
+    `;
+
+
+    try {
+
+      const respuesta = await fetch(URL_DATOS);
+
+      const texto = await respuesta.text();
+
+
+      const inicio = texto.indexOf("(");
+      const fin = texto.lastIndexOf(")");
+
+
+      const json = JSON.parse(
+        texto.substring(inicio + 1, fin)
+      );
+
+
+      const columnas = json.table.cols;
+      const filas = json.table.rows;
+
+
+      let encontrado = null;
+
+
+      for (const fila of filas) {
+
+        const valorInstalacion =
+          fila.c[1]?.v
+            ?.toString()
+            .trim()
+            .toUpperCase();
+
+
+        if (valorInstalacion === instalacion) {
+
+          encontrado = fila;
+
+          break;
+        }
+
+      }
+
+
+      if (!encontrado) {
+
+        resultado.innerHTML = `
+
+          <div class="no-encontrado">
+
+            ❌ <strong>INSTALACIÓN NO ENCONTRADA</strong>
+
+            <br><br>
+
+            No existe información para:
+
+            <strong>${instalacion}</strong>
+
+          </div>
+
+        `;
+
+        return;
+      }
+
+
+      let datosHTML = "";
+
+
+      columnas.forEach((columna, indice) => {
+
+        const nombre =
+          columna.label?.trim() ||
+          `Dato ${indice + 1}`;
+
+
+        const valor =
+          encontrado.c[indice]?.v ?? "";
+
+
+        if (valor === "") {
+          return;
+        }
+
+
+        datosHTML += `
+
+          <div class="dato">
+
+            <strong>${nombre}:</strong><br>
+
+            ${valor}
+
+          </div>
+
+        `;
+
+      });
+
+
+      resultado.innerHTML = `
+
+        <div class="encontrado">
+
+          <div class="titulo-encontrado">
+            ✅ INSTALACIÓN ENCONTRADA
+          </div>
+
+          ${datosHTML}
+
+        </div>
+
+      `;
+
+
+      // Buscar coordenadas
+
+      let coordenadas = "";
+
+
+      columnas.forEach((columna, indice) => {
+
+        const nombre =
+          columna.label
+            ?.trim()
+            .toUpperCase();
+
+
+        if (nombre === "COORDENADAS") {
+
+          coordenadas =
+            encontrado.c[indice]?.v
+            ?.toString()
+            .trim() || "";
+
+        }
+
+      });
+
+
+      if (coordenadas !== "") {
+
+        let partes =
+          coordenadas.split(",");
+
+
+        if (partes.length >= 2) {
+
+          const latitud =
+            partes[0].trim();
+
+          const longitud =
+            partes[1].trim();
+
+
+          const mapa =
+            "https://www.google.com/maps?q=" +
+            encodeURIComponent(
+              latitud + "," + longitud
+            );
+
+
+          resultado.innerHTML += `
+
+            <a
+              class="boton-mapa"
+              href="${mapa}"
+              target="_blank"
+            >
+              🧭 VER UBICACIÓN EN GOOGLE MAPS
+            </a>
+
+          `;
+
+        }
+
+      }
+
+    }
+
+    catch (error) {
+
+      resultado.innerHTML = `
+
+        <div class="no-encontrado">
+
+          ⚠️ No se pudo consultar la base de datos.
+
+          <br><br>
+
+          Revisa que la planilla esté compartida
+          como "Cualquier persona con el enlace".
+
+        </div>
+
+      `;
+
+      console.error(error);
+
+    }
+
+  }
+
+
+  document
+    .getElementById("instalacion")
+    .addEventListener(
+      "keypress",
+      function(event) {
+
+        if (event.key === "Enter") {
+
+          buscarInstalacion();
+
+        }
+
+      }
+    );
+
+</script>
+
+</body>
+</html>
