@@ -177,6 +177,7 @@ body {
 }
 
 @media (max-width: 500px) {
+
     .search-box {
         flex-direction: column;
     }
@@ -196,17 +197,25 @@ body {
 
 <div class="header">
     <div class="icon">📍</div>
+
     <h1>Buscador de Instalaciones</h1>
-    <p>Consulta información y ubicación de instalaciones</p>
+
+    <p>
+        Consulta información y ubicación de instalaciones
+    </p>
 </div>
+
 
 <div class="container">
 
     <div class="search-card">
 
-        <label for="instalacion">Número de instalación</label>
+        <label for="instalacion">
+            Número de instalación
+        </label>
 
         <div class="search-box">
+
             <input
                 type="text"
                 id="instalacion"
@@ -214,73 +223,31 @@ body {
                 autocomplete="off"
             >
 
-            <button onclick="buscar()">Buscar</button>
+            <button onclick="buscar()">
+                Buscar
+            </button>
+
         </div>
 
     </div>
 
+
     <div id="resultado" class="resultado"></div>
 
 </div>
+
 
 <script>
 
 const SHEET_ID =
 "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
 
-const URL =
-"https://docs.google.com/spreadsheets/d/" +
-SHEET_ID +
-"/gviz/tq?tqx=out:json&sheet=Hoja%201";
 
-
-function normalizar(valor) {
-
-    if (valor === null || valor === undefined) {
-        return "";
-    }
-
-    return String(valor)
-        .trim()
-        .toUpperCase()
-        .replace(/\s+/g, "");
-}
-
-
-async function obtenerDatos() {
-
-    const respuesta = await fetch(
-        URL + "&t=" + Date.now()
-    );
-
-    if (!respuesta.ok) {
-        throw new Error("No se pudo conectar con Google Sheets.");
-    }
-
-    const texto = await respuesta.text();
-
-    /*
-       Google devuelve algo parecido a:
-
-       google.visualization.Query.setResponse({...});
-
-       Extraemos solamente el JSON.
-    */
-
-    const inicio = texto.indexOf("{");
-    const fin = texto.lastIndexOf("}");
-
-    if (inicio === -1 || fin === -1) {
-        throw new Error("Google Sheets no devolvió datos válidos.");
-    }
-
-    const json = JSON.parse(
-        texto.substring(inicio, fin + 1)
-    );
-
-    return json.table.rows;
-}
-
+/*
+====================================================
+ BUSCAR DIRECTAMENTE EN GOOGLE SHEETS
+====================================================
+*/
 
 async function buscar() {
 
@@ -293,6 +260,7 @@ async function buscar() {
     const buscada =
         normalizar(input.value);
 
+
     if (!buscada) {
 
         resultado.innerHTML =
@@ -303,67 +271,103 @@ async function buscar() {
         return;
     }
 
+
     resultado.innerHTML =
     '<div class="card mensaje loading">' +
     '🔎 Buscando instalación...' +
     '</div>';
 
+
     try {
 
-        const filas = await obtenerDatos();
+        /*
+        La columna B es INSTALACION.
 
-        let encontrada = null;
+        Se consulta directamente:
+        B = instalación ingresada
+        */
 
-        for (const fila of filas) {
+        const consulta =
+        "select A,B,C,D,E,F,G,H,I,J,K " +
+        "where B = '" +
+        escaparConsulta(buscada) +
+        "'";
 
-            const celdas = fila.c || [];
 
-            /*
-              INSTALACION = columna B
-              índice 1
-            */
+        const url =
+        "https://docs.google.com/spreadsheets/d/" +
+        SHEET_ID +
+        "/gviz/tq" +
+        "?tqx=out:json" +
+        "&sheet=Hoja%201" +
+        "&tq=" +
+        encodeURIComponent(consulta) +
+        "&t=" +
+        Date.now();
 
-            const celda =
-                celdas[1];
 
-            if (!celda) {
-                continue;
-            }
+        const respuesta =
+        await fetch(url);
 
-            /*
-              Probamos tanto el valor real como
-              el valor mostrado por Google.
-            */
 
-            const valor =
-                celda.f !== undefined
-                ? celda.f
-                : celda.v;
+        if (!respuesta.ok) {
 
-            if (normalizar(valor) === buscada) {
-
-                encontrada = celdas;
-                break;
-            }
+            throw new Error(
+                "No se pudo conectar con Google Sheets."
+            );
         }
 
-        if (!encontrada) {
+
+        const texto =
+        await respuesta.text();
+
+
+        const inicio =
+        texto.indexOf("{");
+
+        const fin =
+        texto.lastIndexOf("}");
+
+
+        if (inicio === -1 || fin === -1) {
+
+            throw new Error(
+                "Google Sheets no devolvió información válida."
+            );
+        }
+
+
+        const json =
+        JSON.parse(
+            texto.substring(inicio, fin + 1)
+        );
+
+
+        const filas =
+        json.table &&
+        json.table.rows
+            ? json.table.rows
+            : [];
+
+
+        if (filas.length === 0) {
 
             resultado.innerHTML =
             '<div class="card mensaje error">' +
             '❌ INSTALACIÓN NO ENCONTRADA' +
             '<br><br>' +
             '<span style="font-weight:normal;color:#64748b">' +
-            'No se encontró ' +
+            'No se encontró: ' +
             escapeHTML(buscada) +
-            ' en la columna INSTALACION.' +
             '</span>' +
             '</div>';
 
             return;
         }
 
-        mostrarResultado(encontrada);
+
+        mostrarResultado(filas[0].c);
+
 
     } catch (error) {
 
@@ -371,68 +375,112 @@ async function buscar() {
 
         resultado.innerHTML =
         '<div class="card mensaje error">' +
-        '❌ Error al consultar Google Sheets.' +
+        '❌ Error al consultar Google Sheets' +
         '<br><br>' +
         '<span style="font-weight:normal">' +
-        error.message +
+        escapeHTML(error.message) +
         '</span>' +
         '</div>';
     }
 }
 
 
-function valorCelda(celda) {
+/*
+====================================================
+ FUNCIONES
+====================================================
+*/
+
+function normalizar(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(valor)
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "");
+}
+
+
+function escaparConsulta(valor) {
+
+    /*
+    Escapa comillas simples para
+    Google Visualization Query.
+    */
+
+    return String(valor)
+        .replace(/'/g, "''");
+}
+
+
+function obtenerValor(celda) {
 
     if (!celda) {
         return "";
     }
 
+
     if (celda.f !== undefined) {
         return celda.f;
     }
+
 
     if (celda.v !== undefined) {
         return celda.v;
     }
 
+
     return "";
 }
 
 
+/*
+====================================================
+ MOSTRAR RESULTADO
+====================================================
+*/
+
 function mostrarResultado(celdas) {
 
     const proceso =
-        valorCelda(celdas[0]);
+        obtenerValor(celdas[0]);
 
     const instalacion =
-        valorCelda(celdas[1]);
+        obtenerValor(celdas[1]);
 
     const unidad =
-        valorCelda(celdas[2]);
+        obtenerValor(celdas[2]);
 
     const direccion =
-        valorCelda(celdas[3]);
+        obtenerValor(celdas[3]);
 
     const poste =
-        valorCelda(celdas[4]);
+        obtenerValor(celdas[4]);
 
     const serie =
-        valorCelda(celdas[5]);
+        obtenerValor(celdas[5]);
 
     const marca =
-        valorCelda(celdas[6]);
+        obtenerValor(celdas[6]);
 
     const tipo =
-        valorCelda(celdas[7]);
+        obtenerValor(celdas[7]);
 
     const usuario =
-        valorCelda(celdas[8]);
+        obtenerValor(celdas[8]);
 
     const nota =
-        valorCelda(celdas[9]);
+        obtenerValor(celdas[9]);
 
     const coordenadas =
-        valorCelda(celdas[10]);
+        obtenerValor(celdas[10]);
 
 
     let html = `
@@ -440,78 +488,127 @@ function mostrarResultado(celdas) {
     <div class="card">
 
         <div class="card-title">
-            📍 Instalación ${escapeHTML(instalacion)}
+            📍 Instalación
+            ${escapeHTML(instalacion)}
         </div>
+
 
         <div class="dato">
             <strong>PROCESO</strong>
-            <span>${escapeHTML(proceso)}</span>
+            <span>
+                ${escapeHTML(proceso)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>INSTALACION</strong>
-            <span>${escapeHTML(instalacion)}</span>
+            <span>
+                ${escapeHTML(instalacion)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>UNIDAD DE LECTURA</strong>
-            <span>${escapeHTML(unidad)}</span>
+            <span>
+                ${escapeHTML(unidad)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>DIRECCIÓN</strong>
-            <span>${escapeHTML(direccion)}</span>
+            <span>
+                ${escapeHTML(direccion)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>NÚMERO DE POSTE</strong>
-            <span>${escapeHTML(poste)}</span>
+            <span>
+                ${escapeHTML(poste)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>NÚMERO DE SERIE</strong>
-            <span>${escapeHTML(serie)}</span>
+            <span>
+                ${escapeHTML(serie)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>MARCA</strong>
-            <span>${escapeHTML(marca)}</span>
+            <span>
+                ${escapeHTML(marca)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>TIPO DE NUMERADOR</strong>
-            <span>${escapeHTML(tipo)}</span>
+            <span>
+                ${escapeHTML(tipo)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>USUARIO</strong>
-            <span>${escapeHTML(usuario)}</span>
+            <span>
+                ${escapeHTML(usuario)}
+            </span>
         </div>
+
 
         <div class="dato">
             <strong>NOTA LECTURA</strong>
-            <span>${escapeHTML(nota)}</span>
+            <span>
+                ${escapeHTML(nota)}
+            </span>
         </div>
+
 
         <div class="coordenadas">
 
             <div class="dato">
-                <strong>📍 COORDENADAS</strong>
-                <span>${escapeHTML(coordenadas)}</span>
+
+                <strong>
+                    📍 COORDENADAS
+                </strong>
+
+                <span>
+                    ${escapeHTML(coordenadas)}
+                </span>
+
             </div>
     `;
 
 
+    /*
+    GOOGLE MAPS
+    */
+
     const partes =
         String(coordenadas)
         .split(",")
-        .map(x => x.trim());
+        .map(
+            x => x.trim()
+        );
 
 
     if (
         partes.length === 2 &&
-        !isNaN(parseFloat(partes[0])) &&
-        !isNaN(parseFloat(partes[1]))
+        !isNaN(
+            parseFloat(partes[0])
+        ) &&
+        !isNaN(
+            parseFloat(partes[1])
+        )
     ) {
 
         const lat =
@@ -520,11 +617,13 @@ function mostrarResultado(celdas) {
         const lon =
             parseFloat(partes[1]);
 
+
         const mapsURL =
-            "https://www.google.com/maps/search/?api=1&query=" +
-            encodeURIComponent(
-                lat + "," + lon
-            );
+        "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(
+            lat + "," + lon
+        );
+
 
         html += `
 
@@ -545,6 +644,7 @@ function mostrarResultado(celdas) {
 
         </div>
 
+
         <button
             class="nueva-btn"
             onclick="nuevaBusqueda()"
@@ -552,39 +652,70 @@ function mostrarResultado(celdas) {
             🔄 Nueva búsqueda
         </button>
 
+
     </div>
 
     `;
 
 
-    document.getElementById("resultado")
-    .innerHTML = html;
+    document.getElementById(
+        "resultado"
+    ).innerHTML = html;
 }
 
 
 function escapeHTML(valor) {
 
     return String(valor)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
 function nuevaBusqueda() {
 
-    document.getElementById("instalacion")
-    .value = "";
+    document.getElementById(
+        "instalacion"
+    ).value = "";
 
-    document.getElementById("resultado")
-    .innerHTML = "";
 
-    document.getElementById("instalacion")
-    .focus();
+    document.getElementById(
+        "resultado"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "instalacion"
+    ).focus();
 }
 
+
+/*
+ENTER PARA BUSCAR
+*/
 
 document
 .getElementById("instalacion")
