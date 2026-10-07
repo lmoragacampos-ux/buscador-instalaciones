@@ -1,734 +1,483 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Buscador de Instalaciones</title>
+  <title>Buscador de Instalaciones</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f1f5f9;
-    color: #1e293b;
-}
-
-.header {
-    background: linear-gradient(135deg, #075985, #0284c7);
-    color: white;
-    padding: 28px 20px 35px;
-    text-align: center;
-    border-radius: 0 0 25px 25px;
-}
-
-.header .icon {
-    font-size: 42px;
-    margin-bottom: 8px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 26px;
-}
-
-.header p {
-    margin: 8px 0 0;
-    opacity: .9;
-}
-
-.container {
-    max-width: 650px;
-    margin: -20px auto 40px;
-    padding: 0 15px;
-}
-
-.search-card {
-    background: white;
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 5px 20px rgba(0,0,0,.10);
-}
-
-.search-card label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.search-box {
-    display: flex;
-    gap: 10px;
-}
-
-.search-box input {
-    flex: 1;
-    padding: 15px;
-    border: 2px solid #cbd5e1;
-    border-radius: 12px;
-    font-size: 16px;
-    outline: none;
-}
-
-.search-box input:focus {
-    border-color: #0284c7;
-}
-
-.search-box button {
-    border: none;
-    background: #0284c7;
-    color: white;
-    padding: 0 20px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.search-box button:hover {
-    background: #0369a1;
-}
-
-.resultado {
-    margin-top: 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.08);
-}
-
-.card-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #075985;
-    margin-bottom: 15px;
-}
-
-.dato {
-    padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.dato strong {
-    display: block;
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 4px;
-}
-
-.dato span {
-    font-size: 16px;
-    word-break: break-word;
-}
-
-.coordenadas {
-    background: #f0fdf4;
-    border: 2px solid #86efac;
-    border-radius: 14px;
-    padding: 15px;
-    margin-top: 15px;
-}
-
-.maps-btn {
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    background: #16a34a;
-    color: white;
-    padding: 15px;
-    border-radius: 12px;
-    font-weight: bold;
-    margin-top: 12px;
-}
-
-.nueva-btn {
-    display: block;
-    width: 100%;
-    border: none;
-    background: #e2e8f0;
-    color: #334155;
-    padding: 13px;
-    border-radius: 12px;
-    font-weight: bold;
-    margin-top: 15px;
-    cursor: pointer;
-}
-
-.mensaje {
-    text-align: center;
-    padding: 25px 10px;
-    font-weight: bold;
-}
-
-.error {
-    color: #dc2626;
-}
-
-.loading {
-    color: #0369a1;
-}
-
-@media (max-width: 500px) {
-
-    .search-box {
-        flex-direction: column;
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-    .search-box button {
-        padding: 14px;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5f9;
+      color: #222;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .header .icon {
+      font-size: 42px;
+      margin-bottom: 8px;
     }
 
     .header h1 {
-        font-size: 23px;
+      margin: 0;
+      font-size: 25px;
     }
-}
-</style>
+
+    .header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .search-box {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+    }
+
+    .search-box label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #1976d2;
+    }
+
+    button {
+      border: none;
+      border-radius: 9px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .search-btn {
+      background: #1976d2;
+      color: white;
+    }
+
+    .search-btn:hover {
+      background: #0d47a1;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      margin-top: 20px;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #0d47a1;
+      font-size: 21px;
+    }
+
+    .dato {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .dato:last-child {
+      border-bottom: none;
+    }
+
+    .dato strong {
+      display: block;
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .coordenadas {
+      background: #e8f5e9;
+      border-radius: 9px;
+      padding: 12px;
+      margin-top: 8px;
+      color: #1b5e20;
+      font-weight: bold;
+    }
+
+    .maps-btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      background: #2e7d32;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      padding: 14px;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .maps-btn:hover {
+      background: #1b5e20;
+    }
+
+    .new-btn {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      background: #eeeeee;
+      color: #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .search-row {
+        flex-direction: column;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+
+      .header h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
+  <div class="header">
     <div class="icon">📍</div>
-
     <h1>Buscador de Instalaciones</h1>
+    <p>Consulta información de la instalación</p>
+  </div>
 
-    <p>
-        Consulta información y ubicación de instalaciones
-    </p>
-</div>
+  <div class="container">
 
+    <div class="search-box">
+      <label for="instalacion">Ingrese instalación</label>
 
-<div class="container">
+      <div class="search-row">
+        <input
+          type="text"
+          id="instalacion"
+          placeholder="Ej: 100318128 o G3569505"
+          autocomplete="off"
+        >
 
-    <div class="search-card">
-
-        <label for="instalacion">
-            Número de instalación
-        </label>
-
-        <div class="search-box">
-
-            <input
-                type="text"
-                id="instalacion"
-                placeholder="Ej: 100318128 o G3569505"
-                autocomplete="off"
-            >
-
-            <button onclick="buscar()">
-                Buscar
-            </button>
-
-        </div>
-
+        <button class="search-btn" onclick="buscar()">
+          Buscar
+        </button>
+      </div>
     </div>
 
+    <div id="mensaje" class="message"></div>
 
-    <div id="resultado" class="resultado"></div>
+    <div id="resultado" class="card hidden"></div>
 
-</div>
-
+  </div>
 
 <script>
 
-const SHEET_ID =
-"17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
+const SHEET_ID = "17R2SGwqYpGdkl5jfQwSSpBpwQ06HL4imfaY4O5DbVWE";
+
+function normalizar(valor) {
+  if (valor === null || valor === undefined) {
+    return "";
+  }
+
+  return String(valor)
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "");
+}
 
 
-/*
-====================================================
- BUSCAR DIRECTAMENTE EN GOOGLE SHEETS
-====================================================
-*/
+function escapar(valor) {
+  return String(valor)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+}
+
 
 async function buscar() {
 
-    const input =
-        document.getElementById("instalacion");
+  const input = document.getElementById("instalacion");
+  const mensaje = document.getElementById("mensaje");
+  const resultado = document.getElementById("resultado");
 
-    const resultado =
-        document.getElementById("resultado");
+  const buscada = normalizar(input.value);
 
-    const buscada =
-        normalizar(input.value);
+  resultado.classList.add("hidden");
+  resultado.innerHTML = "";
+  mensaje.innerHTML = "";
 
+  if (!buscada) {
+    mensaje.innerHTML = "⚠️ Ingresa una instalación.";
+    return;
+  }
 
-    if (!buscada) {
+  mensaje.innerHTML = "🔎 Buscando...";
 
-        resultado.innerHTML =
-        '<div class="card mensaje error">' +
-        'Ingresa una instalación.' +
-        '</div>';
+  try {
 
-        return;
+    /*
+      Primero intentamos buscar directamente en la columna B
+      (INSTALACION).
+    */
+
+    const consulta =
+      "select A,B,C,D,E,F,G,H,I,J,K " +
+      "where B = '" +
+      escapar(buscada) +
+      "'";
+
+    const url =
+      "https://docs.google.com/spreadsheets/d/" +
+      SHEET_ID +
+      "/gviz/tq" +
+      "?tqx=out:json" +
+      "&sheet=Hoja%201" +
+      "&tq=" +
+      encodeURIComponent(consulta) +
+      "&headers=1" +
+      "&t=" +
+      Date.now();
+
+    const respuesta = await fetch(url);
+
+    if (!respuesta.ok) {
+      throw new Error("No se pudo conectar con Google Sheets.");
     }
 
+    const texto = await respuesta.text();
+
+    /*
+      Google devuelve algo como:
+
+      google.visualization.Query.setResponse({...});
+    */
+
+    const inicio = texto.indexOf("{");
+    const fin = texto.lastIndexOf("}");
+
+    if (inicio === -1 || fin === -1) {
+      throw new Error("Respuesta inválida de Google Sheets.");
+    }
+
+    const datos = JSON.parse(
+      texto.substring(inicio, fin + 1)
+    );
+
+    if (
+      !datos.table ||
+      !datos.table.rows ||
+      datos.table.rows.length === 0
+    ) {
+
+      mensaje.innerHTML =
+        "❌ No se encontró la instalación <b>" +
+        buscada +
+        "</b>.";
+
+      return;
+    }
+
+    const fila = datos.table.rows[0].c;
+
+    function valor(columna) {
+
+      if (!fila[columna]) {
+        return "";
+      }
+
+      if (fila[columna].f !== undefined) {
+        return fila[columna].f;
+      }
+
+      if (fila[columna].v !== undefined) {
+        return fila[columna].v;
+      }
+
+      return "";
+    }
+
+    const proceso = valor(0);
+    const instalacion = valor(1);
+    const unidad = valor(2);
+    const direccion = valor(3);
+    const poste = valor(4);
+    const serie = valor(5);
+    const marca = valor(6);
+    const tipo = valor(7);
+    const usuario = valor(8);
+    const nota = valor(9);
+    const coordenadas = valor(10);
+
+    mensaje.innerHTML = "✅ Instalación encontrada";
+
+    let botonMapa = "";
+
+    /*
+      Detectamos coordenadas del tipo:
+
+      -35.402349, -71.6411559
+    */
+
+    const patronCoordenadas =
+      /(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/;
+
+    const match = String(coordenadas).match(
+      patronCoordenadas
+    );
+
+    if (match) {
+
+      const lat = match[1];
+      const lon = match[2];
+
+      const mapsUrl =
+        "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(lat + "," + lon);
+
+      botonMapa =
+        '<a class="maps-btn" href="' +
+        mapsUrl +
+        '" target="_blank">' +
+        "📍 Abrir ubicación en Google Maps" +
+        "</a>";
+    }
 
     resultado.innerHTML =
-    '<div class="card mensaje loading">' +
-    '🔎 Buscando instalación...' +
-    '</div>';
 
+      "<h2>📍 Instalación " +
+      instalacion +
+      "</h2>" +
 
-    try {
+      crearDato("Proceso", proceso) +
 
-        /*
-        La columna B es INSTALACION.
+      crearDato("Instalación", instalacion) +
 
-        Se consulta directamente:
-        B = instalación ingresada
-        */
+      crearDato("Unidad de lectura", unidad) +
 
-        const consulta =
-        "select A,B,C,D,E,F,G,H,I,J,K " +
-        "where B = '" +
-        escaparConsulta(buscada) +
-        "'";
+      crearDato("Dirección", direccion) +
 
+      crearDato("Número de poste", poste) +
 
-        const url =
-        "https://docs.google.com/spreadsheets/d/" +
-        SHEET_ID +
-        "/gviz/tq" +
-        "?tqx=out:json" +
-        "&sheet=Hoja%201" +
-        "&tq=" +
-        encodeURIComponent(consulta) +
-        "&t=" +
-        Date.now();
+      crearDato("Número de serie", serie) +
 
+      crearDato("Marca", marca) +
 
-        const respuesta =
-        await fetch(url);
+      crearDato("Tipo de numerador", tipo) +
 
+      crearDato("Usuario", usuario) +
 
-        if (!respuesta.ok) {
+      crearDato("Nota lectura", nota) +
 
-            throw new Error(
-                "No se pudo conectar con Google Sheets."
-            );
-        }
+      '<div class="dato">' +
+        "<strong>Coordenadas</strong>" +
+        '<div class="coordenadas">' +
+        (coordenadas || "Sin coordenadas") +
+        "</div>" +
+        botonMapa +
+      "</div>" +
 
+      '<button class="new-btn" onclick="nuevaBusqueda()">' +
+      "🔎 Nueva búsqueda" +
+      "</button>";
 
-        const texto =
-        await respuesta.text();
+    resultado.classList.remove("hidden");
 
+  } catch (error) {
 
-        const inicio =
-        texto.indexOf("{");
+    console.error(error);
 
-        const fin =
-        texto.lastIndexOf("}");
+    mensaje.innerHTML =
+      "❌ Ocurrió un error al consultar la información.";
 
-
-        if (inicio === -1 || fin === -1) {
-
-            throw new Error(
-                "Google Sheets no devolvió información válida."
-            );
-        }
-
-
-        const json =
-        JSON.parse(
-            texto.substring(inicio, fin + 1)
-        );
-
-
-        const filas =
-        json.table &&
-        json.table.rows
-            ? json.table.rows
-            : [];
-
-
-        if (filas.length === 0) {
-
-            resultado.innerHTML =
-            '<div class="card mensaje error">' +
-            '❌ INSTALACIÓN NO ENCONTRADA' +
-            '<br><br>' +
-            '<span style="font-weight:normal;color:#64748b">' +
-            'No se encontró: ' +
-            escapeHTML(buscada) +
-            '</span>' +
-            '</div>';
-
-            return;
-        }
-
-
-        mostrarResultado(filas[0].c);
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        resultado.innerHTML =
-        '<div class="card mensaje error">' +
-        '❌ Error al consultar Google Sheets' +
-        '<br><br>' +
-        '<span style="font-weight:normal">' +
-        escapeHTML(error.message) +
-        '</span>' +
-        '</div>';
-    }
+  }
 }
 
 
-/*
-====================================================
- FUNCIONES
-====================================================
-*/
-
-function normalizar(valor) {
-
-    if (
-        valor === null ||
-        valor === undefined
-    ) {
-        return "";
-    }
-
-
-    return String(valor)
-        .trim()
-        .toUpperCase()
-        .replace(/\s+/g, "");
-}
-
-
-function escaparConsulta(valor) {
-
-    /*
-    Escapa comillas simples para
-    Google Visualization Query.
-    */
-
-    return String(valor)
-        .replace(/'/g, "''");
-}
-
-
-function obtenerValor(celda) {
-
-    if (!celda) {
-        return "";
-    }
-
-
-    if (celda.f !== undefined) {
-        return celda.f;
-    }
-
-
-    if (celda.v !== undefined) {
-        return celda.v;
-    }
-
-
-    return "";
-}
-
-
-/*
-====================================================
- MOSTRAR RESULTADO
-====================================================
-*/
-
-function mostrarResultado(celdas) {
-
-    const proceso =
-        obtenerValor(celdas[0]);
-
-    const instalacion =
-        obtenerValor(celdas[1]);
-
-    const unidad =
-        obtenerValor(celdas[2]);
-
-    const direccion =
-        obtenerValor(celdas[3]);
-
-    const poste =
-        obtenerValor(celdas[4]);
-
-    const serie =
-        obtenerValor(celdas[5]);
-
-    const marca =
-        obtenerValor(celdas[6]);
-
-    const tipo =
-        obtenerValor(celdas[7]);
-
-    const usuario =
-        obtenerValor(celdas[8]);
-
-    const nota =
-        obtenerValor(celdas[9]);
-
-    const coordenadas =
-        obtenerValor(celdas[10]);
-
-
-    let html = `
-
-    <div class="card">
-
-        <div class="card-title">
-            📍 Instalación
-            ${escapeHTML(instalacion)}
-        </div>
-
-
-        <div class="dato">
-            <strong>PROCESO</strong>
-            <span>
-                ${escapeHTML(proceso)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>INSTALACION</strong>
-            <span>
-                ${escapeHTML(instalacion)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>UNIDAD DE LECTURA</strong>
-            <span>
-                ${escapeHTML(unidad)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>DIRECCIÓN</strong>
-            <span>
-                ${escapeHTML(direccion)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>NÚMERO DE POSTE</strong>
-            <span>
-                ${escapeHTML(poste)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>NÚMERO DE SERIE</strong>
-            <span>
-                ${escapeHTML(serie)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>MARCA</strong>
-            <span>
-                ${escapeHTML(marca)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>TIPO DE NUMERADOR</strong>
-            <span>
-                ${escapeHTML(tipo)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>USUARIO</strong>
-            <span>
-                ${escapeHTML(usuario)}
-            </span>
-        </div>
-
-
-        <div class="dato">
-            <strong>NOTA LECTURA</strong>
-            <span>
-                ${escapeHTML(nota)}
-            </span>
-        </div>
-
-
-        <div class="coordenadas">
-
-            <div class="dato">
-
-                <strong>
-                    📍 COORDENADAS
-                </strong>
-
-                <span>
-                    ${escapeHTML(coordenadas)}
-                </span>
-
-            </div>
-    `;
-
-
-    /*
-    GOOGLE MAPS
-    */
-
-    const partes =
-        String(coordenadas)
-        .split(",")
-        .map(
-            x => x.trim()
-        );
-
-
-    if (
-        partes.length === 2 &&
-        !isNaN(
-            parseFloat(partes[0])
-        ) &&
-        !isNaN(
-            parseFloat(partes[1])
-        )
-    ) {
-
-        const lat =
-            parseFloat(partes[0]);
-
-        const lon =
-            parseFloat(partes[1]);
-
-
-        const mapsURL =
-        "https://www.google.com/maps/search/?api=1&query=" +
-        encodeURIComponent(
-            lat + "," + lon
-        );
-
-
-        html += `
-
-        <a
-            class="maps-btn"
-            href="${mapsURL}"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            🗺️ Abrir ubicación en Google Maps
-        </a>
-
-        `;
-    }
-
-
-    html += `
-
-        </div>
-
-
-        <button
-            class="nueva-btn"
-            onclick="nuevaBusqueda()"
-        >
-            🔄 Nueva búsqueda
-        </button>
-
-
-    </div>
-
-    `;
-
-
-    document.getElementById(
-        "resultado"
-    ).innerHTML = html;
-}
-
-
-function escapeHTML(valor) {
-
-    return String(valor)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+function crearDato(nombre, valor) {
+
+  return (
+    '<div class="dato">' +
+      "<strong>" +
+      nombre +
+      "</strong>" +
+      "<div>" +
+      (valor || "—") +
+      "</div>" +
+    "</div>"
+  );
 }
 
 
 function nuevaBusqueda() {
 
-    document.getElementById(
-        "instalacion"
-    ).value = "";
+  document.getElementById("instalacion").value = "";
 
+  document.getElementById("mensaje").innerHTML = "";
 
-    document.getElementById(
-        "resultado"
-    ).innerHTML = "";
+  document.getElementById("resultado").innerHTML = "";
 
+  document.getElementById("resultado")
+    .classList.add("hidden");
 
-    document.getElementById(
-        "instalacion"
-    ).focus();
+  document.getElementById("instalacion").focus();
 }
 
 
-/*
-ENTER PARA BUSCAR
-*/
+document.getElementById("instalacion")
+  .addEventListener("keydown", function(event) {
 
-document
-.getElementById("instalacion")
-.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-            buscar();
-        }
-
+    if (event.key === "Enter") {
+      buscar();
     }
-);
+
+  });
 
 </script>
 
